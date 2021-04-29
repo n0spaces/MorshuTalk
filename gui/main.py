@@ -27,34 +27,56 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.audio_segment = AudioSegment.empty()
-        self.audio_arr = np.array([])
+        self.audio_raw = self.audio_segment.raw_data
         self.samplerate = 18900
+
+        self.audio_buff_pos = 0
+
+        # start audio stream
+        self.audio_stream = sd.RawOutputStream(samplerate=self.samplerate,
+                                               channels=1,
+                                               dtype='int16',
+                                               callback=self.stream_callback)
 
         self.ui.btn_load.clicked.connect(self.btn_load_clicked)
         self.ui.btn_play.clicked.connect(self.btn_play_clicked)
 
     def btn_load_clicked(self):
         self.audio_segment = morshu_tts(self.ui.textedit.toPlainText())
-        self.audio_arr = np.array(self.audio_segment.get_array_of_samples())
+        self.audio_raw = self.audio_segment.raw_data
         self.samplerate = self.audio_segment.frame_rate
 
     def btn_play_clicked(self):
-        active = False
-        try:
-            active = sd.get_stream().active
-        except RuntimeError:
-            pass
-
-        if active:
-            sd.stop()
+        if self.audio_stream.stopped:
+            self.audio_stream.start()
         else:
-            sd.play(self.audio_arr, self.samplerate)
+            self.audio_stream.stop()
+            self.audio_buff_pos = 0
+
+    def stream_callback(self, outdata: bytes, frames: int, _time, _status):
+        self.ui.lbl_time.setText(str(self.audio_buff_pos / self.samplerate / self.audio_segment.sample_width))
+        slice_len = (frames * self.audio_segment.channels * self.audio_segment.sample_width)
+
+        if self.audio_buff_pos > len(self.audio_raw):
+            outdata[:] = b'\x00' * slice_len
+            # stopping is slow
+            self.audio_stream.stop()
+            self.audio_buff_pos = 0
+            return
+
+        start = self.audio_buff_pos
+        end = start + slice_len
+        if end > len(self.audio_raw):
+            outdata[:] = self.audio_raw[start:] + b'\x00' * (end - len(self.audio_raw))
+        else:
+            outdata[:] = self.audio_raw[start:end]
+        self.audio_buff_pos = end
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    window = MainWindow()
-    window.show()
+    main_window = MainWindow()
+    main_window.show()
 
     sys.exit(app.exec_())
