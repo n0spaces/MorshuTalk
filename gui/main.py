@@ -4,7 +4,7 @@ from PySide6.QtGui import QCloseEvent
 from pydub import AudioSegment
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from morshu import morshu_tts
+from morshu import Morshu
 from gui.ui_mainwindow import Ui_MainWindow
 
 
@@ -13,6 +13,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.morshu = Morshu()
 
         self.audio_segment = AudioSegment.empty()
         self.audio_raw = self.audio_segment.raw_data
@@ -57,7 +59,7 @@ class MainWindow(QMainWindow):
     """Load the morshu tts with the text and update the audio fields"""
     def load_audio(self) -> None:
         self.playing = False
-        self.audio_segment = morshu_tts(self.ui.textedit.toPlainText())
+        self.audio_segment = self.morshu.load_text(self.ui.textedit.toPlainText())
         self.audio_raw = self.audio_segment.raw_data
 
         # set audio slider length

@@ -53,148 +53,163 @@ similar_phonemes = {
 }
 
 
-def substitute_similar_phonemes(phonemes: List[str]):
-    i = 0
-    while i < len(phonemes):
-        # remove number
-        if phonemes[i].endswith('0') or phonemes[i].endswith('1') or phonemes[i].endswith('2'):
-            phonemes[i] = phonemes[i][:len(phonemes[i]) - 1]
+class Morshu:
+    def __init__(self):
+        self.input_str = ""
+        self.input_phonemes = []
 
-        if phonemes[i] in similar_phonemes.keys():
-            phonemes = phonemes[0:i] + similar_phonemes[phonemes[i]] + phonemes[i + 1:]
-        i += 1
-    return phonemes
+        self.space_length = 20
+        self.stop_length = 100
 
+        self.out_audio = AudioSegment.empty()
 
-def get_morshu_phoneme(phoneme: str, random_choice=True) -> Union[AudioSegment, None]:
-    phoneme = phoneme.upper()
-    phoneme_indices = np.where(morshu_rec['phoneme'] == phoneme)[0]
+        # TODO: output more data with audio segment
 
-    if len(phoneme_indices) == 0:
-        return None
+    def load_text(self, text: str = None) -> AudioSegment:
+        if text is not None:
+            self.input_str = text
+        text = self.input_str.replace('\n', ',,,')
 
-    if len(phoneme_indices) == 1 or not random_choice:
-        index = phoneme_indices[0]
-    else:
-        index = random.choice(phoneme_indices)
+        phonemes = g2p(text)
+        segments = []
+        phoneme_segment = []
+        while len(phonemes) > 0:
+            p = phonemes.pop(0)
+            if p in g2p.phonemes:
+                phoneme_segment.append(p)
+            if p not in g2p.phonemes or len(phonemes) == 0:
+                segments.append(self.get_best_morshu_phoneme_segment(phoneme_segment))
+                phoneme_segment = []
+            if p == ' ':
+                segments.append(AudioSegment.silent(self.space_length))
+            elif p in '.,?!:;()':
+                segments.append(AudioSegment.silent(self.stop_length))
 
-    segment = morshu_wav[morshu_rec['timing'][index - 1]: morshu_rec['timing'][index]]
-    return segment
+        full = AudioSegment.empty().set_frame_rate(morshu_wav.frame_rate)
+        for segment in segments:
+            full += segment
 
+        if len(full) == 0:
+            warnings.warn('returned audio segment is empty', UserWarning)
 
-def get_phoneme_sequence_occurrences(phonemes: List[str]) -> List[Tuple[int, int]]:
-    occurrences = []
-    for i in range(len(morshu_rec) - len(phonemes)):
-        if (morshu_rec['phoneme'][i:i + len(phonemes)] == phonemes).all():
-            start = morshu_rec['timing'][i - 1]
-            end = morshu_rec['timing'][i + len(phonemes) - 1]
-            occurrences.append((start, end))
-    return occurrences
+        self.out_audio = full
+        return full
 
+    @staticmethod
+    def substitute_similar_phonemes(phonemes: List[str]):
+        i = 0
+        while i < len(phonemes):
+            # remove emphasis number
+            if phonemes[i].endswith('0') or phonemes[i].endswith('1') or phonemes[i].endswith('2'):
+                phonemes[i] = phonemes[i][:len(phonemes[i]) - 1]
 
-def get_best_morshu_single_phoneme(phoneme: str, preceding: str = "", succeeding: str = ""):
-    # list of phoneme indices of the highest priority
-    best_indices = []
-    phoneme_indices = np.where(morshu_rec['phoneme'] == phoneme)[0]
-    if len(phoneme_indices) == 0:
-        return None
+            if phonemes[i] in similar_phonemes.keys():
+                phonemes = phonemes[0:i] + similar_phonemes[phonemes[i]] + phonemes[i + 1:]
+            i += 1
+        return phonemes
 
-    highest_priority = 0
-    for i in phoneme_indices:
-        # priorities for preceding and succeeding phonemes:
-        # exact match: 10
-        # compared phonemes both contain vowels: 1
-        # no match: 0
-        priority = 0
+    @staticmethod
+    def get_morshu_phoneme(phoneme: str, random_choice=True) -> Union[AudioSegment, None]:
+        phoneme = phoneme.upper()
+        phoneme_indices = np.where(morshu_rec['phoneme'] == phoneme)[0]
 
-        # check preceding phonemes
-        morshu_preceding = morshu_rec['phoneme'][i - 1]
-        if morshu_preceding == preceding:
-            priority += 10
-        # check both phonemes for any vowel
-        elif any(c in morshu_preceding for c in "AEIOU") and any(c in preceding for c in "AEIOU"):
-            priority += 1
+        if len(phoneme_indices) == 0:
+            return None
 
-        # check succeeding phonemes
-        morshu_succeeding = morshu_rec['phoneme'][i + 1]
-        if morshu_succeeding == succeeding:
-            priority += 10
-        # check both phonemes for any vowel
-        elif any(c in morshu_succeeding for c in "AEIOU") and any(c in succeeding for c in "AEIOU"):
-            priority += 1
+        if len(phoneme_indices) == 1 or not random_choice:
+            index = phoneme_indices[0]
+        else:
+            index = random.choice(phoneme_indices)
 
-        if priority < highest_priority:
-            continue
-        if priority > highest_priority:
-            highest_priority = priority
-            best_indices = []
-        best_indices.append(i)
+        segment = morshu_wav[morshu_rec['timing'][index - 1]: morshu_rec['timing'][index]]
+        return segment
 
-    index = random.choice(best_indices)
-    segment = morshu_wav[morshu_rec['timing'][index - 1]: morshu_rec['timing'][index]]
-    return segment
+    @staticmethod
+    def get_phoneme_sequence_occurrences(phonemes: List[str]) -> List[Tuple[int, int]]:
+        occurrences = []
+        for i in range(len(morshu_rec) - len(phonemes)):
+            if (morshu_rec['phoneme'][i:i + len(phonemes)] == phonemes).all():
+                start = morshu_rec['timing'][i - 1]
+                end = morshu_rec['timing'][i + len(phonemes) - 1]
+                occurrences.append((start, end))
+        return occurrences
 
+    @staticmethod
+    def get_best_morshu_single_phoneme(phoneme: str, preceding: str = "", succeeding: str = ""):
+        # list of phoneme indices of the highest priority
+        best_indices = []
+        phoneme_indices = np.where(morshu_rec['phoneme'] == phoneme)[0]
+        if len(phoneme_indices) == 0:
+            return None
 
-def get_best_morshu_phoneme_segment(phonemes: List[str]):
-    phonemes = substitute_similar_phonemes(phonemes)
-    if len(phonemes) == 1:
-        return get_best_morshu_single_phoneme(phonemes[0])
+        highest_priority = 0
+        for i in phoneme_indices:
+            # priorities for preceding and succeeding phonemes:
+            # exact match: 10
+            # compared phonemes both contain vowels: 1
+            # no match: 0
+            priority = 0
 
-    # preceding and succeeding phonemes are used if we need to search for a single phoneme
-    preceding = ""
+            # check preceding phonemes
+            morshu_preceding = morshu_rec['phoneme'][i - 1]
+            if morshu_preceding == preceding:
+                priority += 10
+            # check both phonemes for any vowel
+            elif any(c in morshu_preceding for c in "AEIOU") and any(c in preceding for c in "AEIOU"):
+                priority += 1
 
-    full_segment = AudioSegment.empty()
-    while len(phonemes) > 0:
-        sequence_length = 1
-        segment = AudioSegment.empty()
+            # check succeeding phonemes
+            morshu_succeeding = morshu_rec['phoneme'][i + 1]
+            if morshu_succeeding == succeeding:
+                priority += 10
+            # check both phonemes for any vowel
+            elif any(c in morshu_succeeding for c in "AEIOU") and any(c in succeeding for c in "AEIOU"):
+                priority += 1
 
-        while sequence_length <= len(phonemes):
-            occurrences = get_phoneme_sequence_occurrences(phonemes[:sequence_length])
-            if len(occurrences) == 0:
-                break
-            start, end = random.choice(occurrences)
-            segment = morshu_wav[start:end]
-            sequence_length += 1
-        sequence_length -= 1
+            if priority < highest_priority:
+                continue
+            if priority > highest_priority:
+                highest_priority = priority
+                best_indices = []
+            best_indices.append(i)
 
-        # find the best single phoneme if a longer segment wasn't found
-        if sequence_length == 1:
-            if sequence_length + 1 < len(phonemes):
-                succeeding = phonemes[sequence_length + 1]
-            else:
-                succeeding = ""
-            segment = get_best_morshu_single_phoneme(phonemes[0], preceding, succeeding)
+        index = random.choice(best_indices)
+        segment = morshu_wav[morshu_rec['timing'][index - 1]: morshu_rec['timing'][index]]
+        return segment
 
-        full_segment += segment
-        preceding = phonemes[sequence_length - 1]
-        del phonemes[:sequence_length]
+    @staticmethod
+    def get_best_morshu_phoneme_segment(phonemes: List[str]):
+        phonemes = Morshu.substitute_similar_phonemes(phonemes)
+        if len(phonemes) == 1:
+            return Morshu.get_best_morshu_single_phoneme(phonemes[0])
 
-    return full_segment
+        # preceding and succeeding phonemes are used if we need to search for a single phoneme
+        preceding = ""
 
+        full_segment = AudioSegment.empty()
+        while len(phonemes) > 0:
+            sequence_length = 1
+            segment = AudioSegment.empty()
 
-def morshu_tts(text: str, space_length=20, stop_length=100) -> AudioSegment:
-    text = text.replace('\n', ',,,')
+            while sequence_length <= len(phonemes):
+                occurrences = Morshu.get_phoneme_sequence_occurrences(phonemes[:sequence_length])
+                if len(occurrences) == 0:
+                    break
+                start, end = random.choice(occurrences)
+                segment = morshu_wav[start:end]
+                sequence_length += 1
+            sequence_length -= 1
 
-    phonemes = g2p(text)
-    segments = []
-    phoneme_segment = []
-    while len(phonemes) > 0:
-        p = phonemes.pop(0)
-        if p in g2p.phonemes:
-            phoneme_segment.append(p)
-        if p not in g2p.phonemes or len(phonemes) == 0:
-            segments.append(get_best_morshu_phoneme_segment(phoneme_segment))
-            phoneme_segment = []
-        if p == ' ':
-            segments.append(AudioSegment.silent(space_length))
-        elif p in '.,?!:;()':
-            segments.append(AudioSegment.silent(stop_length))
+            # find the best single phoneme if a longer segment wasn't found
+            if sequence_length == 1:
+                if sequence_length + 1 < len(phonemes):
+                    succeeding = phonemes[sequence_length + 1]
+                else:
+                    succeeding = ""
+                segment = Morshu.get_best_morshu_single_phoneme(phonemes[0], preceding, succeeding)
 
-    full = AudioSegment.empty().set_frame_rate(morshu_wav.frame_rate)
-    for segment in segments:
-        full += segment
+            full_segment += segment
+            preceding = phonemes[sequence_length - 1]
+            del phonemes[:sequence_length]
 
-    if len(full) == 0:
-        warnings.warn('returned audio segment is empty', UserWarning)
-
-    return full
+        return full_segment
