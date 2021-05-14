@@ -1,6 +1,6 @@
 import sys
 import sounddevice as sd
-from PySide6.QtGui import QCloseEvent
+from PySide6.QtGui import QCloseEvent, QPixmap
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from morshu import Morshu
@@ -22,6 +22,10 @@ class MainWindow(QMainWindow):
 
         self._sprite_frame = 0
 
+        self.frames = []
+        for i in range(154):
+            self.frames.append(QPixmap(":/sprites/{}.png".format(i)))
+
         # current audio time in seconds
         self.audio_current_time = 0.0
 
@@ -30,6 +34,8 @@ class MainWindow(QMainWindow):
                                                channels=1,
                                                dtype='int16',
                                                callback=self.stream_callback)
+
+        self.ui.action_view_sprite.setChecked(True)
 
         self.ui.btn_load.clicked.connect(self.load_audio)
         self.ui.btn_play.clicked.connect(self.toggle_play)
@@ -74,7 +80,7 @@ class MainWindow(QMainWindow):
             return
         if not value == self._sprite_frame:
             self._sprite_frame = value
-            self.ui.lbl_sprite.setPixmap(":/sprites/{}.png".format(value))
+            self.ui.lbl_sprite.setPixmap(self.frames[value])
 
     def load_audio(self) -> None:
         """Load the morshu tts with the text and update the audio fields"""
