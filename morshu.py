@@ -130,8 +130,21 @@ class Morshu:
         self.out_audio = output
         return output
 
-    def get_frame_idx_from_millis(self, millis: int):
-        pass
+    def get_frame_idx_from_millis(self, millis: int) -> int:
+        """
+        Get the morshu frame from the given time in milliseconds
+        :param millis: Time in the output audio in milliseconds.
+        :return: The morshu frame index that occurs at that time in the generated audio. The morshu video is 10 fps.
+        """
+        millis = int(millis)
+        idx = np.argmin(self.audio_segment_timings['output'] <= millis) - 1
+
+        output_segment_start, morshu_segment_start = self.audio_segment_timings[idx]
+        if morshu_segment_start == -1:
+            return -1
+
+        morshu_frame = (morshu_segment_start + (millis - output_segment_start)) // 100  # 10 fps, 1 frame per 100 millis
+        return morshu_frame
 
     @staticmethod
     def substitute_similar_phonemes(phonemes: List[str]):
@@ -142,7 +155,7 @@ class Morshu:
         doesn't say in his two lines of dialog. These phonemes may sound slightly different than expected, and may be
         updated to be more accurate later.
 
-        The emphasis number at the end of some vowel phonemes are also removed to simplify things.
+        The emphasis number at the end of some vowel phonemes are removed to simplify things.
 
         :param phonemes: A list of phonemes to parse through.
 

@@ -20,7 +20,10 @@ class MainWindow(QMainWindow):
         self._audio_buff_pos = 0
         self._audio_buff_end = 0
 
-        self.audio_current_time = 0
+        self._sprite_frame = 0
+
+        # current audio time in seconds
+        self.audio_current_time = 0.0
 
         # start audio stream
         self.audio_stream = sd.RawOutputStream(samplerate=18900,
@@ -51,6 +54,27 @@ class MainWindow(QMainWindow):
             self.ui.slider.setValue(
                 self.audio_buff_pos // (self.morshu.out_audio.channels * self.morshu.out_audio.sample_width)
             )
+
+        self.sprite_frame = self.morshu.get_frame_idx_from_millis(self.audio_current_time * 1000)
+
+    @property
+    def sprite_frame(self):
+        """The sprite frame index that appears in the gui"""
+        return self._sprite_frame
+
+    @sprite_frame.setter
+    def sprite_frame(self, value):
+        """
+        Set the morshu frame index to display in the gui.
+
+        If the assigned index is -1, sprite_frame remains the same and the displayed pixmap is unaffected. Otherwise,
+        the sprite pixmap corresponding to the index is displayed.
+        """
+        if value == -1:
+            return
+        if not value == self._sprite_frame:
+            self._sprite_frame = value
+            self.ui.lbl_sprite.setPixmap(":/sprites/{}.png".format(value))
 
     def load_audio(self) -> None:
         """Load the morshu tts with the text and update the audio fields"""

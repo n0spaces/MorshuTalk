@@ -65,7 +65,7 @@ class Ui_MainWindow(object):
 
         self.lbl_sprite = QLabel(self.centralwidget)
         self.lbl_sprite.setObjectName(u"lbl_sprite")
-        self.lbl_sprite.setPixmap(QPixmap(u":/sprites/87.png"))
+        self.lbl_sprite.setPixmap(QPixmap(u":/sprites/82.png"))
         self.lbl_sprite.setScaledContents(True)
         self.lbl_sprite.setTextInteractionFlags(Qt.NoTextInteraction)
 

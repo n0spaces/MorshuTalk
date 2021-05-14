@@ -86,7 +86,7 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../res/res.qrc">:/sprites/87.png</pixmap>
+       <pixmap resource="../res/res.qrc">:/sprites/82.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
