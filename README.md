@@ -1,6 +1,6 @@
 # MorshuTalk
 
-A [Morshu](https://zelda.fandom.com/wiki/Morshu) text-to-speech program.
+A [Morshu](https://knowyourmeme.com/memes/morshu) text-to-speech program.
 
 ![](screenshot.png)
 
