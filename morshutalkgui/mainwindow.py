@@ -1,10 +1,9 @@
-import sys
 import sounddevice as sd
 from PySide6.QtGui import QCloseEvent, QPixmap
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QMainWindow
 
-from morshu import Morshu
-from gui.ui_mainwindow import Ui_MainWindow
+from morshutalk import Morshu
+from morshutalkgui.ui_mainwindow import Ui_MainWindow
 
 
 class MainWindow(QMainWindow):
@@ -50,7 +49,7 @@ class MainWindow(QMainWindow):
     def audio_buff_pos(self, value):
         """
         Sets the index in the raw audio buffer.
-        This also updates elements in the gui, like the slider (unless it's currently clicked on.)
+        This also updates elements in the morshutalkgui, like the slider (unless it's currently clicked on.)
         """
         self._audio_buff_pos = value
         self.audio_current_time = (self.audio_buff_pos / self.morshu.out_audio.frame_rate /
@@ -65,13 +64,13 @@ class MainWindow(QMainWindow):
 
     @property
     def sprite_frame(self):
-        """The sprite frame index that appears in the gui"""
+        """The sprite frame index that appears in the morshutalkgui"""
         return self._sprite_frame
 
     @sprite_frame.setter
     def sprite_frame(self, value):
         """
-        Set the morshu frame index to display in the gui.
+        Set the morshu frame index to display in the morshutalkgui.
 
         If the assigned index is -1, sprite_frame remains the same and the displayed pixmap is unaffected. Otherwise,
         the sprite pixmap corresponding to the index is displayed.
@@ -171,12 +170,3 @@ class MainWindow(QMainWindow):
         """Safely stop and close the audio stream before closing the window"""
         self.audio_stream.stop()
         self.audio_stream.close()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    main_window = MainWindow()
-    main_window.show()
-
-    sys.exit(app.exec_())
