@@ -12,33 +12,36 @@ morshu_wav_fp = path.join(path.dirname(__file__), 'morshu.wav')
 morshu_wav = AudioSegment.from_wav(morshu_wav_fp)
 
 # Record that contains each recognizable phoneme in the morshu audio file,
-# along with the time that phoneme ends in milliseconds.
+# along with the time that phoneme ends in milliseconds, and the priority (how the phoneme sounds compared to others).
 morshu_rec = np.rec.array([
     # typos in comments are intentional
-    ('', 160), ('L', 250), ('AE', 348), ('M', 420), ('P', 510), ('OY', 700), ('L', 835), ('', 1090),  # lamp oil
-    ('R', 1180), ('OW', 1300), ('', 1390), ('P', 1490), ('', 1850),  # rope
-    ('B', 1895), ('AA', 2090), ('M', 2235), ('Z', 2390), ('', 2780), ('Y', 2840), ('UW', 2960),  # bombs you
-    ('W', 3030), ('AA', 3110), ('N', 3150), ('IH', 3240), ('T', 3370), ('', 3810),  # won it
-    ('IH', 3960), ('T', 4070), ('Y', 4260), ('UH', 4400), ('R', 4510), ('Z', 4600),  # it yours
-    ('M', 4675), ('AY', 4810), ('', 4885),  # my
-    ('F', 4930), ('R', 4980), ('EH', 5100), ('N', 5240), ('D', 5300), ('', 5520),  # friend
-    ('AE', 5630), ('Z', 5740), ('L', 5870), ('AO', 6000), ('NG', 6140), ('AE', 6170), ('Z', 6265),  # as long as
-    ('Y', 6300), ('UW', 6380), ('HH', 6450), ('AE', 6510), ('V', 6580),  # you have
-    ('IH', 6640), ('N', 6670), ('AH', 6747), ('F', 6855),  # enough
-    ('R', 6960), ('UW', 7060), ('B', 7170), ('IY', 7340), ('Z', 7520), ('', 8236),  # rubies
+    ('', 160, 0), ('L', 250, 3), ('AE', 348, 3), ('M', 420, 2), ('P', 510, 1),  # lamp
+    ('OY', 700, 3), ('L', 835, 1), ('', 1090, 0),  # oil
+    ('R', 1180, 3), ('OW', 1300, 3), ('', 1390, 0), ('P', 1490, 3), ('', 1850, 0),  # rope
+    ('B', 1895, 3), ('AA', 2090, 2), ('M', 2235, 3), ('Z', 2390, 3),  # bombs
+    ('', 2780, 0), ('Y', 2840, 3), ('UW', 2960, 3),  # you
+    ('W', 3030, 3), ('AA', 3110, 3), ('N', 3150, 1), ('IH', 3240, 3), ('T', 3370, 3), ('', 3810, 0),  # won it
+    ('IH', 3960, 3), ('T', 4070, 3), ('Y', 4260, 3), ('UH', 4400, 3), ('R', 4510, 3), ('Z', 4600, 3),  # it yours
+    ('M', 4675, 3), ('AY', 4810, 2), ('', 4885, 0),  # my
+    ('F', 4930, 3), ('R', 4980, 3), ('EH', 5100, 3), ('N', 5240, 3), ('D', 5300, 3), ('', 5520, 0),  # friend
+    ('AE', 5630, 2), ('Z', 5740, 3), ('L', 5870, 2), ('AO', 6000, 3), ('NG', 6140, 2),  # as long
+    ('AE', 6170, 1), ('Z', 6265, 3), ('Y', 6300, 2), ('UW', 6380, 3),  # as you
+    ('HH', 6450, 3), ('AE', 6510, 1), ('V', 6580, 2),  # have
+    ('IH', 6640, 3), ('N', 6670, 2), ('AH', 6747, 3), ('F', 6855, 3),  # enough
+    ('R', 6960, 3), ('UW', 7060, 3), ('B', 7170, 1), ('IY', 7340, 3), ('Z', 7520, 3), ('', 8236, 0),  # rubies
 
-    ('S', 8407), ('AA', 8495), ('R', 8570), ('IY', 8630),  # sorry
-    ('L', 8740), ('IH', 8811), ('NG', 8942), ('K', 9014), ('', 9251),  # link
-    ('AY', 9384), ('', 9467), ('K', 9512), ('AE', 9640), ('N', 9716), ('', 9844),  # i can
-    ('G', 9894), ('IH', 9985), ('V', 10060), ('', 10149),  # give
-    ('K', 10256), ('R', 10297), ('EH', 10383), ('IH', 10482), ('', 10564), ('T', 10617),  # cre-it
-    ('', 10962), ('K', 11019), ('AH', 11100), ('M', 11229), ('B', 11246), ('AE', 11369),  # come ba-
-    ('', 11511), ('W', 11590), ('EH', 11622), ('N', 11705),  # when
-    ('Y', 11755), ('UH', 11808), ('R', 11864), ('AH', 11959),  # you're a
-    ('L', 12095), ('IH', 12202), ('L', 12386),  # lil
-    ('', 12596), ('M', 12748), ('M', 12888), ('M', 13037), ('M', 13196), ('', 13426),  # MMMMMMMMMMMMMM
-    ('R', 13494), ('IH', 13589), ('', 13632), ('CH', 13773), ('ER', 13991), ('', 13992)  # richer
-], names=('phoneme', 'timing'))
+    ('S', 8407, 3), ('AA', 8495, 2), ('R', 8570, 2), ('IY', 8630, 1),  # sorry
+    ('L', 8740, 3), ('IH', 8811, 2), ('NG', 8942, 2), ('K', 9014, 3), ('', 9251, 0),  # link
+    ('AY', 9384, 3), ('', 9467, 0), ('K', 9512, 3), ('AE', 9640, 2), ('N', 9716, 2), ('', 9844, 0),  # i can
+    ('G', 9894, 3), ('IH', 9985, 2), ('V', 10060, 3), ('', 10149, 0),  # give
+    ('K', 10256, 3), ('R', 10297, 2), ('EH', 10383, 2), ('IH', 10482, 1), ('', 10564, 0), ('T', 10617, 3),  # cre-it
+    ('', 10962, 0), ('K', 11019, 3), ('AH', 11100, 2), ('M', 11229, 3), ('B', 11246, 2), ('AE', 11369, 3),  # come ba-
+    ('', 11511, 0), ('W', 11590, 3), ('EH', 11622, 1), ('N', 11705, 3),  # when
+    ('Y', 11755, 3), ('UH', 11808, 3), ('R', 11864, 3), ('AH', 11959, 3),  # you're a
+    ('L', 12095, 3), ('IH', 12202, 3), ('L', 12386, 3),  # lil
+    ('', 12596, 0), ('M', 12748, 3), ('M', 12888, 2), ('M', 13037, 2), ('M', 13196, 3), ('', 13426, 0),  # MMMM
+    ('R', 13494, 3), ('IH', 13589, 3), ('', 13632, 0), ('CH', 13773, 3), ('ER', 13991, 3), ('', 13992, 0)  # richer
+], names=('phoneme', 'timing', 'priority'))
 
 # substitutes to phonemes that morshu doesn't say (some of these are tentative
 similar_phonemes = {
@@ -243,17 +246,15 @@ class Morshu:
         for i in phoneme_indices:
             # priorities for preceding and succeeding phonemes:
             # exact match: 10
-            # compared phonemes both contain vowels: 1
+            # compared phonemes both contain vowels: 5
             # no match: 0
-            priority = 0
-
-            # check preceding phonemes
-            morshu_preceding = morshu_rec['phoneme'][i - 1]
+            # starting priority is obtained from morshu_rec
+            morshu_preceding, _timing, priority = morshu_rec[i - 1]
             if morshu_preceding == preceding:
                 priority += 10
             # check both phonemes for any vowel
             elif any(c in morshu_preceding for c in "AEIOU") and any(c in preceding for c in "AEIOU"):
-                priority += 1
+                priority += 5
 
             # check succeeding phonemes
             morshu_succeeding = morshu_rec['phoneme'][i + 1]
@@ -263,6 +264,8 @@ class Morshu:
             elif any(c in morshu_succeeding for c in "AEIOU") and any(c in succeeding for c in "AEIOU"):
                 priority += 1
 
+            if priority == highest_priority:
+                priority += random.randint(0, 1)
             if priority < highest_priority:
                 continue
             if priority > highest_priority:
