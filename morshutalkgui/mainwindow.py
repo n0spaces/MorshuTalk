@@ -35,7 +35,9 @@ class MainWindow(QMainWindow):
                                                callback=self.stream_callback)
 
         self.ui.action_view_sprite.setChecked(True)
+        self.ui.action_use_phoneme_priority.setChecked(True)
 
+        self.ui.action_use_phoneme_priority.triggered.connect(self.action_use_phoneme_priorities_triggered)
         self.ui.btn_load.clicked.connect(self.load_audio)
         self.ui.btn_play.clicked.connect(self.toggle_play)
         self.ui.slider.sliderMoved.connect(self.slider_moved)
@@ -80,6 +82,9 @@ class MainWindow(QMainWindow):
         if not value == self._sprite_frame:
             self._sprite_frame = value
             self.ui.lbl_sprite.setPixmap(self.frames[value])
+
+    def action_use_phoneme_priorities_triggered(self, checked):
+        self.morshu.use_phoneme_priority = checked
 
     def load_audio(self) -> None:
         """Load the morshu tts with the text and update the audio fields"""
