@@ -10,7 +10,7 @@ concatenates the segments of Morshu's audio where he speaks those phonemes.
 I'll improve this readme later when the project becomes more stable.
 
 ## Running
-Install the packages in `requirements.txt`, then run `py gui` to load the GUI.
+Install the packages in `requirements.txt`, then run `python morshutalkgui` to load the GUI.
 
 Right now, this repo's root directory must be in PYTHONPATH for it to work. (PyCharm does this automatically.)
 In Windows, you can do this with `set PYTHONPATH=%PATH%;%PYTHONPATH%;`.

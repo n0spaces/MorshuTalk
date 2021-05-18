@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
     def audio_buff_pos(self, value):
         """
         Sets the index in the raw audio buffer.
-        This also updates elements in the morshutalkgui, like the slider (unless it's currently clicked on.)
+        This also updates elements in the gui, like the slider (unless it's currently clicked on.)
         """
         self._audio_buff_pos = value
         self.audio_current_time = (self.audio_buff_pos / self.morshu.out_audio.frame_rate /
@@ -66,13 +66,13 @@ class MainWindow(QMainWindow):
 
     @property
     def sprite_frame(self):
-        """The sprite frame index that appears in the morshutalkgui"""
+        """The sprite frame index that appears in the gui"""
         return self._sprite_frame
 
     @sprite_frame.setter
     def sprite_frame(self, value):
         """
-        Set the morshu frame index to display in the morshutalkgui.
+        Set the morshu frame index to display in the gui.
 
         If the assigned index is -1, sprite_frame remains the same and the displayed pixmap is unaffected. Otherwise,
         the sprite pixmap corresponding to the index is displayed.
