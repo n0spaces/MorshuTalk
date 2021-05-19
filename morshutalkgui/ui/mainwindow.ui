@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>416</width>
+    <width>434</width>
     <height>388</height>
    </rect>
   </property>
@@ -171,7 +171,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>416</width>
+     <width>434</width>
      <height>21</height>
     </rect>
    </property>
@@ -181,27 +181,14 @@
     </property>
     <addaction name="action_quit"/>
    </widget>
-   <widget class="QMenu" name="menuOptions">
+   <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Options</string>
+     <string>View</string>
     </property>
-    <widget class="QMenu" name="menu_view">
-     <property name="title">
-      <string>View</string>
-     </property>
-     <addaction name="action_view_sprite"/>
-    </widget>
-    <widget class="QMenu" name="menuMorshuTalk">
-     <property name="title">
-      <string>MorshuTalk</string>
-     </property>
-     <addaction name="action_use_phoneme_priority"/>
-    </widget>
-    <addaction name="menuMorshuTalk"/>
-    <addaction name="menu_view"/>
+    <addaction name="action_view_sprite"/>
    </widget>
    <addaction name="menu_file"/>
-   <addaction name="menuOptions"/>
+   <addaction name="menuView"/>
   </widget>
   <action name="action_view_sprite">
    <property name="checkable">
@@ -214,14 +201,6 @@
   <action name="action_quit">
    <property name="text">
     <string>Quit</string>
-   </property>
-  </action>
-  <action name="action_use_phoneme_priority">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Use phoneme priority</string>
    </property>
   </action>
  </widget>
