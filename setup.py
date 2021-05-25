@@ -1,73 +1,26 @@
-import sys
-from cx_Freeze import setup, Executable
+import setuptools
 
-# no idea why cx_freeze includes soooo many unneeded packages
-# i'd exclude more but shiboken (pyside6) needs them for some reason
-exclude_packages = [
-    'asyncio',
-    'certifi',
-    'cffi',
-    'chardet',
-    'concurrent',
-    'curses',
-    'distutils',
-    'idna',
-    'joblib',
-    'lib2to3',
-    'msilib',
-    'multiprocessing',
-    'networkx',
-    'pycparser',
-    'pydoc_data',
-    'pyreadline',
-    'pytz',
-    'requrests',
-    'scipy',
-    'setuptools',
-    'test',
-    'tkinter',
-    'tqdm',
-    'unittest',
-    'urllib3',
-    'xmlrpc',
-    'yaml',
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
 
-    'PySide6.QtPrintSupport',
-    'PySide6.QtSql',
-    'PySide6.QtNetwork',
-    'PySide6.QtTest',
-    'PySide6.QtConcurrent',
-    'PySide6.QtXml',
-    'PySide6.QtHelp',
-    'PySide6.QtOpenGL',
-    'PySide6.QtOpenGLFunctions',
-    'PySide6.QtOpenGLWidgets',
-    'PySide6.QtQml',
-    'PySide6.QtQuick',
-    'PySide6.QtQuickControls2',
-    'PySide6.QtQuickWidgets',
-    'PySide6.QtSvg',
-    'PySide6.QtSvgWidgets',
-    'PySide6.QtUiTools',
-    'PySide6.Qt3DCore',
-    'PySide6.Qt3DRender',
-    'PySide6.Qt3DInput',
-    'PySide6.Qt3DLogic',
-    'PySide6.Qt3DAnimation',
-    'PySide6.Qt3DExtras'
-]
-
-build_options = {'packages': [], 'excludes': exclude_packages}
-
-base = None
-# base = 'Win32GUI' if sys.platform == 'win32' else None
-
-executables = [
-    Executable('morshutalkgui\\__main__.py', base=base, target_name='MorshuTalk')
-]
-
-setup(name='MorshuTalk',
-      version='0.0.1',
-      description='Morshu TTS',
-      options={'build_exe': build_options},
-      executables=executables)
+setuptools.setup(
+    name="MorshuTalk",
+    version="0.0.1",
+    author="n0spaces",
+    description="Morshu text-to-speech",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/n0spaces/MorshuTalk",
+    packages=["morshutalk", "morshutalkgui"],
+    package_data={"morshutalk": ["morshu.wav"]},
+    entry_points={
+        "console_scripts": ["morshutalk=morshutalk.__main__:main", "morshutalkgui=morshutalkgui.__main__:main"],
+    },
+    install_requires=["g2p_en", "numpy", "pydub", "sounddevice"],
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.7',
+)

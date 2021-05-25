@@ -94,9 +94,10 @@ class Morshu:
 
         :return: The generated audio. It's also stored in the out_audio variable.
         """
-        if text is not None:
-            self.input_str = text
-        text = self.input_str.replace('\n', ',,,')
+        if text is None:
+            text = self.input_str
+        self.input_str = text
+        text = text.replace('\n', ',,,')
 
         phonemes = g2p(text)
 
