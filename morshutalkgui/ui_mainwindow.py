@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.0.3
+## Created by: Qt User Interface Compiler version 6.0.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,6 +24,8 @@ class Ui_MainWindow(object):
         self.action_view_sprite.setCheckable(True)
         self.action_quit = QAction(MainWindow)
         self.action_quit.setObjectName(u"action_quit")
+        self.action_github = QAction(MainWindow)
+        self.action_github.setObjectName(u"action_github")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
@@ -122,12 +124,16 @@ class Ui_MainWindow(object):
         self.menu_file.setObjectName(u"menu_file")
         self.menuView = QMenu(self.menubar)
         self.menuView.setObjectName(u"menuView")
+        self.menuAbout = QMenu(self.menubar)
+        self.menuAbout.setObjectName(u"menuAbout")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menu_file.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
+        self.menubar.addAction(self.menuAbout.menuAction())
         self.menu_file.addAction(self.action_quit)
         self.menuView.addAction(self.action_view_sprite)
+        self.menuAbout.addAction(self.action_github)
 
         self.retranslateUi(MainWindow)
         self.action_view_sprite.toggled.connect(self.lbl_sprite.setVisible)
@@ -140,6 +146,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MorshuTalk", None))
         self.action_view_sprite.setText(QCoreApplication.translate("MainWindow", u"Morshu", None))
         self.action_quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.action_github.setText(QCoreApplication.translate("MainWindow", u"Github", None))
         self.lbl_sprite.setText("")
         self.textedit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type some text here, click Load to generate the audio, then click Play.", None))
         self.btn_load.setText(QCoreApplication.translate("MainWindow", u"Load", None))
@@ -149,5 +156,6 @@ class Ui_MainWindow(object):
         self.lbl_time_end.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.menu_file.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuView.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
+        self.menuAbout.setTitle(QCoreApplication.translate("MainWindow", u"About", None))
     # retranslateUi
 

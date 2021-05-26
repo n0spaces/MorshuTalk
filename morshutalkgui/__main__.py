@@ -1,13 +1,7 @@
 import sys
-try:
-    from PySide6.QtWidgets import QApplication
-except ImportError:
-    raise ImportError("The GUI requires PySide6 to run. Install it with 'pip install PySide6'")
+from PySide6.QtWidgets import QApplication
 
-try:
-    from mainwindow import MainWindow
-except ImportError:
-    from .mainwindow import MainWindow
+from morshutalkgui.mainwindow import MainWindow
 
 
 def main():

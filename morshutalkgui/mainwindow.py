@@ -1,3 +1,5 @@
+import os
+import webbrowser
 import sounddevice as sd
 from PySide6.QtGui import QCloseEvent, QPixmap
 from PySide6.QtWidgets import QMainWindow
@@ -39,6 +41,7 @@ class MainWindow(QMainWindow):
         self.ui.btn_load.clicked.connect(self.load_audio)
         self.ui.btn_play.clicked.connect(self.toggle_play)
         self.ui.slider.sliderMoved.connect(self.slider_moved)
+        self.ui.action_github.triggered.connect(lambda: webbrowser.open("https://github.com/n0spaces/MorshuTalk/"))
 
     @property
     def audio_buff_pos(self) -> int:

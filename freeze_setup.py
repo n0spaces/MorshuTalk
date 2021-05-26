@@ -30,33 +30,12 @@ exclude_packages = [
     'urllib3',
     'xmlrpc',
     'yaml',
-
-    'PySide6.QtPrintSupport',
-    'PySide6.QtSql',
-    'PySide6.QtNetwork',
-    'PySide6.QtTest',
-    'PySide6.QtConcurrent',
-    'PySide6.QtXml',
-    'PySide6.QtHelp',
-    'PySide6.QtOpenGL',
-    'PySide6.QtOpenGLFunctions',
-    'PySide6.QtOpenGLWidgets',
-    'PySide6.QtQml',
-    'PySide6.QtQuick',
-    'PySide6.QtQuickControls2',
-    'PySide6.QtQuickWidgets',
-    'PySide6.QtSvg',
-    'PySide6.QtSvgWidgets',
-    'PySide6.QtUiTools',
-    'PySide6.Qt3DCore',
-    'PySide6.Qt3DRender',
-    'PySide6.Qt3DInput',
-    'PySide6.Qt3DLogic',
-    'PySide6.Qt3DAnimation',
-    'PySide6.Qt3DExtras'
 ]
 
-build_options = {'packages': [], 'excludes': exclude_packages}
+build_options = {
+    'excludes': exclude_packages,
+    'include_files': [('thirdparty.txt', ''), ('LICENSE.txt', '')]
+}
 
 base = None
 # base = 'Win32GUI' if sys.platform == 'win32' else None
