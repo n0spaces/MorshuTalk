@@ -1,4 +1,3 @@
-import os
 import webbrowser
 import sounddevice as sd
 from PySide6.QtGui import QCloseEvent, QPixmap
