@@ -4,7 +4,7 @@ import random
 import warnings
 from pydub import AudioSegment
 from g2p_en import G2p
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 
 g2p = G2p()
 
@@ -85,21 +85,33 @@ class Morshu:
         morshu segment that begins at 1.895 seconds will be played (when morshu says 'B' in 'bombs').
         """
 
-    def load_text(self, text: str = None) -> AudioSegment:
+    def load_text(self, text: str = None, progress_callback: Callable[[int, int], None] = None) -> AudioSegment:
         """
         Generate audio from the given text. The input_str, input_phonemes, and audio_segment_timings variables are also
         updated.
 
         :param text: The text to use. If omitted, the input_str variable is used instead.
 
+        :param progress_callback: An optional callback function to report progress for stitching the audio segments.
+        The first argument is the current step, and the second argument is the total steps.
+        If both arguments are zero, then this is converting the text to phonemes and can't determine progress yet.
+
         :return: The generated audio. It's also stored in the out_audio variable.
         """
+        if progress_callback is None:
+            # dummy function just so I don't have to check if progress_callback is None every time I call it
+            progress_callback = (lambda step, total: None)
+
         if text is None:
             text = self.input_str
         self.input_str = text
         text = text.replace('\n', ',,,')
 
         phonemes = g2p(text)
+
+        progress_step = 0
+        progress_total = len(phonemes)
+        progress_callback(progress_step, progress_total)
 
         # output audio
         output = AudioSegment.empty().set_frame_rate(morshu_wav.frame_rate)
@@ -126,6 +138,9 @@ class Morshu:
             elif p in self.stop_chars:
                 output = self.append_audio_segment(output, AudioSegment.silent(self.stop_length), -1, audio_out_millis,
                                                    audio_morshu_millis)
+
+            progress_step += 1
+            progress_callback(progress_step, progress_total)
 
         if len(output) == 0:
             warnings.warn('returned audio segment is empty', UserWarning)
