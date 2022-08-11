@@ -1,7 +1,11 @@
+print("Loading MorshuTalk...")
+
 import sys
 from PySide6.QtWidgets import QApplication
 
 from morshutalkgui.mainwindow import MainWindow
+
+print("Ready")
 
 
 def main():
