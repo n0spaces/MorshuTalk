@@ -4,7 +4,7 @@ import random
 import warnings
 from pydub import AudioSegment
 from g2p_en import G2p
-from typing import List, Tuple, Callable
+from typing import List, Tuple, Callable, Literal
 
 g2p = G2p()
 
@@ -85,7 +85,13 @@ class Morshu:
         morshu segment that begins at 1.895 seconds will be played (when morshu says 'B' in 'bombs').
         """
 
-    def load_text(self, text: str = None, progress_callback: Callable[[int, int], None] = None) -> AudioSegment:
+        self.canceled = False
+
+    def cancel(self):
+        self.canceled = True
+
+    def load_text(self, text: str = None, progress_callback: Callable[[int, int], None] = None) \
+            -> AudioSegment | Literal[False]:
         """
         Generate audio from the given text. The input_str, input_phonemes, and audio_segment_timings variables are also
         updated.
@@ -98,9 +104,11 @@ class Morshu:
 
         :return: The generated audio. It's also stored in the out_audio variable.
         """
+        self.canceled = False
+
         if progress_callback is None:
             # dummy function just so I don't have to check if progress_callback is None every time I call it
-            progress_callback = (lambda step, total: None)
+            progress_callback = (lambda *_: None)
 
         if text is None:
             text = self.input_str
@@ -125,6 +133,9 @@ class Morshu:
         # segment of multiple phonemes in one word (phonemes between pauses)
         phoneme_segment = []
         while len(phonemes) > 0:
+            if self.canceled:
+                return False
+
             p = phonemes.pop(0)
             if p in g2p.phonemes:
                 phoneme_segment.append(p)

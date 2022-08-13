@@ -1,40 +1,16 @@
 import webbrowser
 import sounddevice as sd
-from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QCloseEvent, QPixmap
-from PySide6.QtWidgets import QMainWindow, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from morshutalk import Morshu
+from morshutalkgui.morshuworker import MorshuWorker
+from morshutalkgui.progressdialog import ProgressDialog
 from morshutalkgui.ui_mainwindow import Ui_MainWindow
 
 
-class MorshuWorker(QThread):
-    """Background thread for loading Morshu audio to avoid UI blocking"""
-
-    done = Signal(bool)
-    """Emitted when audio is done loading. True if successful, False if an exception occured."""
-
-    def __init__(self, morshu: Morshu):
-        super().__init__()
-
-        self.morshu = morshu
-
-    def run(self) -> None:
-        """
-        Start loading the text. morshu.input_str must be set first.
-
-        Don't use this method. Use start() instead so it runs in a background thread.
-        """
-        try:
-            self.morshu.load_text()
-        except Exception as e:
-            # the PySide type stubs don't understand Signals for some reason
-            # noinspection PyUnresolvedReferences
-            self.done.emit(False)
-            print(e)
-
-        # noinspection PyUnresolvedReferences
-        self.done.emit(True)
+# PySide6 builtin, referenced to call processEvents
+qApp: QApplication
 
 
 class MainWindow(QMainWindow):
@@ -46,8 +22,8 @@ class MainWindow(QMainWindow):
         self.morshu = Morshu()
 
         self.morshu_worker = MorshuWorker(self.morshu)
-        # noinspection PyUnresolvedReferences
-        self.morshu_worker.done.connect(self.load_audio_done)
+
+        self.progress_dialog = ProgressDialog(self)
 
         self.playing = False
 
@@ -77,6 +53,11 @@ class MainWindow(QMainWindow):
         self.ui.btn_play.clicked.connect(self.toggle_play)
         self.ui.slider.sliderMoved.connect(self.slider_moved)
         self.ui.action_github.triggered.connect(lambda: webbrowser.open("https://github.com/n0spaces/MorshuTalk/"))
+
+        self.morshu_worker.done.connect(self.load_audio_done)
+        self.morshu_worker.step.connect(self.load_audio_step)
+
+        self.progress_dialog.canceled.connect(self.morshu.cancel)
 
     @property
     def audio_buff_pos(self) -> int:
@@ -118,7 +99,7 @@ class MainWindow(QMainWindow):
         if not value == self._sprite_frame:
             self._sprite_frame = value
             self.ui.lbl_sprite.setPixmap(self.frames[value])
-            self.ui.lbl_sprite.update()
+            qApp.processEvents()  # fixes sprite freezing after updating too many times
 
     @property
     def playback_enabled(self):
@@ -143,15 +124,23 @@ class MainWindow(QMainWindow):
         self.playback_enabled = False
         self.morshu.input_str = self.ui.textedit.toPlainText()
         self.morshu_worker.start()
+        self.progress_dialog.reset()
+
+    def load_audio_step(self, step: int, total: int):
+        self.progress_dialog.setMaximum(total)
+        self.progress_dialog.setValue(step)
 
     def load_audio_done(self, successful: bool) -> None:
         """If loading the audio was successful, make it playable."""
         self.playback_enabled = True
+        self.progress_dialog.hide()
 
         if not successful:
-            QMessageBox.critical(self,
-                                 "Sorry, Link. I can't give credit!",
-                                 "An error occured while trying to load this text.")
+            QMessageBox.critical(
+                self,
+                "Error!",
+                "An error occured while trying to load this text.\n\n" + str(self.morshu_worker.exception)
+            )
             return
 
         # set audio slider length
