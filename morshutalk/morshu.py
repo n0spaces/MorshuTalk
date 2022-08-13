@@ -157,6 +157,9 @@ class Morshu:
         :param millis: Time in the output audio in milliseconds.
         :return: The morshu frame index that occurs at that time in the generated audio. The morshu video is 10 fps.
         """
+        if len(self.out_audio) == 0:
+            return 0
+
         millis = int(millis)
         idx = np.argmin(self.audio_segment_timings['output'] <= millis) - 1
 

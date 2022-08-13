@@ -1,10 +1,40 @@
 import webbrowser
 import sounddevice as sd
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QCloseEvent, QPixmap
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from morshutalk import Morshu
 from morshutalkgui.ui_mainwindow import Ui_MainWindow
+
+
+class MorshuWorker(QThread):
+    """Background thread for loading Morshu audio to avoid UI blocking"""
+
+    done = Signal(bool)
+    """Emitted when audio is done loading. True if successful, False if an exception occured."""
+
+    def __init__(self, morshu: Morshu):
+        super().__init__()
+
+        self.morshu = morshu
+
+    def run(self) -> None:
+        """
+        Start loading the text. morshu.input_str must be set first.
+
+        Don't use this method. Use start() instead so it runs in a background thread.
+        """
+        try:
+            self.morshu.load_text()
+        except Exception as e:
+            # the PySide type stubs don't understand Signals for some reason
+            # noinspection PyUnresolvedReferences
+            self.done.emit(False)
+            print(e)
+
+        # noinspection PyUnresolvedReferences
+        self.done.emit(True)
 
 
 class MainWindow(QMainWindow):
@@ -15,7 +45,13 @@ class MainWindow(QMainWindow):
 
         self.morshu = Morshu()
 
+        self.morshu_worker = MorshuWorker(self.morshu)
+        # noinspection PyUnresolvedReferences
+        self.morshu_worker.done.connect(self.load_audio_done)
+
         self.playing = False
+
+        self._playback_enabled = True
 
         self._audio_buff_pos = 0
         self._audio_buff_end = 0
@@ -82,11 +118,41 @@ class MainWindow(QMainWindow):
         if not value == self._sprite_frame:
             self._sprite_frame = value
             self.ui.lbl_sprite.setPixmap(self.frames[value])
+            self.ui.lbl_sprite.update()
+
+    @property
+    def playback_enabled(self):
+        """Whether the playback controls are enabled, or if it's disabled while waiting for the audio to load."""
+        return self._playback_enabled
+
+    @playback_enabled.setter
+    def playback_enabled(self, value):
+        """Enables or disables the playback controls."""
+        if self._playback_enabled == value:
+            return
+        self._playback_enabled = value
+
+        self.ui.btn_play.setEnabled(value)
+        self.ui.slider.setEnabled(value)
+
+        if not self._playback_enabled:
+            self.stop_audio()
 
     def load_audio(self) -> None:
-        """Load the morshu tts with the text and update the audio fields"""
-        self.playing = False
-        self.morshu.load_text(self.ui.textedit.toPlainText())
+        """Start the MorshuWorker so the text is loaded in the background."""
+        self.playback_enabled = False
+        self.morshu.input_str = self.ui.textedit.toPlainText()
+        self.morshu_worker.start()
+
+    def load_audio_done(self, successful: bool) -> None:
+        """If loading the audio was successful, make it playable."""
+        self.playback_enabled = True
+
+        if not successful:
+            QMessageBox.critical(self,
+                                 "Sorry, Link. I can't give credit!",
+                                 "An error occured while trying to load this text.")
+            return
 
         # set audio slider length
         self.ui.slider.setMaximum(
