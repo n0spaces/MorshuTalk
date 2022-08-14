@@ -126,9 +126,10 @@ class MainWindow(QMainWindow):
         self.morshu_worker.start()
         self.progress_dialog.reset()
 
-    def load_audio_step(self, step: int, total: int):
-        self.progress_dialog.setMaximum(total)
-        self.progress_dialog.setValue(step)
+    def load_audio_step(self, major_step: int, minor_step: int, minor_total: int):
+        self.progress_dialog.major_step = major_step
+        self.progress_dialog.setMaximum(minor_total)
+        self.progress_dialog.setValue(minor_step)
 
     def load_audio_done(self, successful: bool) -> None:
         """If loading the audio was successful, make it playable."""

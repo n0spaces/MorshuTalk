@@ -3,10 +3,11 @@ import numpy as np
 import random
 import warnings
 from pydub import AudioSegment
-from g2p_en import G2p
 from typing import List, Tuple, Callable, Literal
 
-g2p = G2p()
+from morshutalk.g2p import G2pProgress
+
+g2p = G2pProgress()
 
 morshu_wav_fp = path.join(path.dirname(__file__), 'morshu.wav')
 morshu_wav = AudioSegment.from_wav(morshu_wav_fp)
@@ -88,9 +89,10 @@ class Morshu:
         self.canceled = False
 
     def cancel(self):
+        g2p.cancel()
         self.canceled = True
 
-    def load_text(self, text: str = None, progress_callback: Callable[[int, int], None] = None) \
+    def load_text(self, text: str = None, progress_callback: Callable[[int, int, int], None] = None) \
             -> AudioSegment | Literal[False]:
         """
         Generate audio from the given text. The input_str, input_phonemes, and audio_segment_timings variables are also
@@ -99,27 +101,28 @@ class Morshu:
         :param text: The text to use. If omitted, the input_str variable is used instead.
 
         :param progress_callback: An optional callback function to report progress for stitching the audio segments.
-        The first argument is the current step, and the second argument is the total steps.
-        If both arguments are zero, then this is converting the text to phonemes and can't determine progress yet.
+        The first argument is the current major step (0 = g2p, 1 = audio), the second argument is the current minor step
+        (word or phoneme currently on), and the last argument is the total minor steps.
 
         :return: The generated audio. It's also stored in the out_audio variable.
         """
         self.canceled = False
 
         if progress_callback is None:
-            # dummy function just so I don't have to check if progress_callback is None every time I call it
-            progress_callback = (lambda *_: None)
+            # dummy function just so I don't have to check if progress_callback exists every time I call it
+            progress_callback: Callable[[int, int, int], None] = lambda major_step, minor_step, minor_total: None
 
         if text is None:
             text = self.input_str
         self.input_str = text
         text = text.replace('\n', ',,,')
 
-        phonemes = g2p(text)
+        phonemes = g2p.run_with_progress(text, lambda step, total: progress_callback(0, step, total))
+        if g2p.cancelled:
+            return False
 
         progress_step = 0
         progress_total = len(phonemes)
-        progress_callback(progress_step, progress_total)
 
         # output audio
         output = AudioSegment.empty().set_frame_rate(morshu_wav.frame_rate)
@@ -136,6 +139,9 @@ class Morshu:
             if self.canceled:
                 return False
 
+            progress_callback(1, progress_step, progress_total)
+            progress_step += 1
+
             p = phonemes.pop(0)
             if p in g2p.phonemes:
                 phoneme_segment.append(p)
@@ -149,9 +155,6 @@ class Morshu:
             elif p in self.stop_chars:
                 output = self.append_audio_segment(output, AudioSegment.silent(self.stop_length), -1, audio_out_millis,
                                                    audio_morshu_millis)
-
-            progress_step += 1
-            progress_callback(progress_step, progress_total)
 
         if len(output) == 0:
             warnings.warn('returned audio segment is empty', UserWarning)

@@ -9,7 +9,7 @@ class MorshuWorker(QThread):
     done = Signal(bool)
     """Emitted when audio is done loading. True if successful, False if an exception occured."""
 
-    step = Signal(int, int)
+    step = Signal(int, int, int)
 
     def __init__(self, morshu: Morshu):
         super().__init__()
@@ -25,7 +25,7 @@ class MorshuWorker(QThread):
         Don't use this method. Use start() instead so it runs in a background thread.
         """
         try:
-            self.morshu.load_text(progress_callback=lambda x, y: self.step.emit(x, y))
+            self.morshu.load_text(progress_callback=self.step.emit)
         except Exception as e:
             print(e)
             self.exception = e
