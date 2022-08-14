@@ -32,8 +32,13 @@ exclude_packages = [
     'yaml',
 ]
 
+include_packages = [
+    'secrets',
+]
+
 build_options = {
     'excludes': exclude_packages,
+    'includes': include_packages,
     'include_files': [('thirdparty.txt', ''), ('LICENSE.txt', '')]
 }
 
