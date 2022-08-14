@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
 
         self.playing = False
 
-        self._playback_enabled = True
+        self._controls_enabled = True
 
         self._audio_buff_pos = 0
         self._audio_buff_end = 0
@@ -102,26 +102,27 @@ class MainWindow(QMainWindow):
             qApp.processEvents()  # fixes sprite freezing after updating too many times
 
     @property
-    def playback_enabled(self):
+    def controls_enabled(self):
         """Whether the playback controls are enabled, or if it's disabled while waiting for the audio to load."""
-        return self._playback_enabled
+        return self._controls_enabled
 
-    @playback_enabled.setter
-    def playback_enabled(self, value):
+    @controls_enabled.setter
+    def controls_enabled(self, value):
         """Enables or disables the playback controls."""
-        if self._playback_enabled == value:
+        if self._controls_enabled == value:
             return
-        self._playback_enabled = value
+        self._controls_enabled = value
 
+        self.ui.btn_load.setEnabled(value)
         self.ui.btn_play.setEnabled(value)
         self.ui.slider.setEnabled(value)
 
-        if not self._playback_enabled:
+        if not self._controls_enabled:
             self.stop_audio()
 
     def load_audio(self) -> None:
         """Start the MorshuWorker so the text is loaded in the background."""
-        self.playback_enabled = False
+        self.controls_enabled = False
         self.morshu.input_str = self.ui.textedit.toPlainText()
         self.morshu_worker.start()
         self.progress_dialog.reset()
@@ -133,7 +134,7 @@ class MainWindow(QMainWindow):
 
     def load_audio_done(self, successful: bool) -> None:
         """If loading the audio was successful, make it playable."""
-        self.playback_enabled = True
+        self.controls_enabled = True
         self.progress_dialog.hide()
 
         if not successful:
