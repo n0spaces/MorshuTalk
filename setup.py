@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name="MorshuTalk",
-    version="0.0.1",
+    version="0.0.2",
     author="n0spaces",
     description="Morshu text-to-speech",
     long_description=long_description,

@@ -45,7 +45,7 @@ executables = [
 ]
 
 cx_Freeze.setup(name='MorshuTalk',
-                version='0.0.1',
+                version='0.0.2',
                 description='Morshu TTS',
                 options={'build_exe': build_options},
                 executables=executables)

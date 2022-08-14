@@ -56,18 +56,18 @@ animate as he speaks. You can toggle the sprite visibility from the View menu.
 3. Install the required packages with `pip install -r requirements.txt`
 4. If you make changes to `mainwindow.ui`, update `ui_mainwindow.py` with:
 ```commandline
-pyside6-uic morshutalkgui\ui\mainwindow.ui -o morshutalkgui\ui_mainwindow.py --from-imports
+pyside6-uic morshutalkgui/ui/mainwindow.ui -o morshutalkgui/ui_mainwindow.py --from-imports
 ```
 5. If you make changes to `res.qrc`, update `res_rc.py` with:
 ```commandline
-pyside6-rcc morshutalkgui\res\res.qrc -o morshutalkgui\res_rc.py
+pyside6-rcc morshutalkgui/res/res.qrc -o morshutalkgui/res_rc.py
 ```
 6. Use `build` to create a distributable package:
     1. Install it with `pip install build`
     2. Run `python -m build`. A tar.gz and wheel package should be located in the `dist` folder.
 7. Use cx_freeze to build an executable for Windows:
     1. Install it with `pip install cx_freeze`
-    2. Run `python setup.py build`. The executable and many other files should be located in the `build` folder.
+    2. Run `python freeze_setup.py build`. The executable and many other files should be located in the `build` folder.
     3. Run `python clean_cx_freeze_build.py` to remove unnecessary files. (cx_freeze does a bad job at choosing what
        packages are necessary. This script removes 150+ MB of unused files.)
 
