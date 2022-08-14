@@ -1,13 +1,12 @@
 from sounddevice import play
 
-try:
-    from morshu import Morshu
-except ImportError:
-    from .morshu import Morshu
+from morshutalk.morshu import Morshu
+from morshutalk.cli_progress import CliProgress
 
 
 def main():
     morshu = Morshu()
+    progress = CliProgress()
 
     print("Type the text you would like Morshu to speak")
     print("Leave blank and press enter to exit")
@@ -18,7 +17,7 @@ def main():
             if len(text) == 0:
                 exit(0)
             else:
-                audio = morshu.load_text(text)
+                audio = morshu.load_text(text, progress.update_progress)
                 play(audio.get_array_of_samples(), audio.frame_rate)
 
     except KeyboardInterrupt:

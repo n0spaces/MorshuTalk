@@ -162,6 +162,9 @@ class Morshu:
         else:
             self.audio_segment_timings = np.rec.array(tuple(zip(audio_out_millis, audio_morshu_millis)),
                                                       names=('output', 'morshu'))
+
+        progress_callback(1, progress_total, progress_total)
+
         self.out_audio = output
         return output
 
