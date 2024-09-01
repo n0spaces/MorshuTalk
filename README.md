@@ -40,6 +40,18 @@ Just run `MorshuTalk.exe` to start the GUI.
 Installing the package will add the commands `morshutalk` and `morshutalkgui` to your command-line. If those commands
 don't work, you can run the modules with `python -m morshutalk` or `python -m morshutalkgui`.
 
+#### Python package quickstart 
+```
+from morshutalk.morshu import Morshu
+morshu = morshu()
+text = "Hello world"
+audio = morshu.load_text(text)
+audio.export("output.mp3", format="mp3") # to save as a file
+
+from sounddevice import play
+play(audio.get_array_of_samples(), audio.frame_rate) # to play audio
+```
+
 #### Command-Line
 Run `morshutalk` to load the interactive command-line app. Simply type whatever lines you want Morshu to speak, then he
 will talk. To exit, leave the line blank and hit enter.
