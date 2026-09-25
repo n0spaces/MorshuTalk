@@ -1,5 +1,14 @@
 > Hi Wayne :)
 
+> [!TIP]
+> For anyone coming here who just wants to try out the TTS, [click here to download it](https://github.com/n0spaces/MorshuTalk/releases/download/v0.0.1/MorshuTalk-GUI-Windows-0.0.1.zip).
+> Extract the ZIP and run MorshuTalk.exe. (For Linux users, this should work out-of-the-box with wine.)
+
+> For developers: this program is pretty old and I don't plan on updating it any time soon. The building instructions below might not work with modern versions of Python.
+>
+> If you plan on using this in a project and need help customizing or improving it, feel free to open a discussion or issue.
+> I'm happy to provide guidance on how the sentence-mixing algorithm works (it's not that complicated) and how custom voices could potentially be added.
+
 # MorshuTalk
 
 A [Morshu](https://knowyourmeme.com/memes/morshu) text-to-speech program.
