@@ -5,10 +5,12 @@ from PySide6.QtWidgets import QApplication
 
 from morshutalkgui.mainwindow import MainWindow
 
-print("Ready")
+import nltk
 
 
 def main():
+    nltk.download("averaged_perceptron_tagger_eng")
+
     app = QApplication(sys.argv)
 
     main_window = MainWindow()
@@ -17,5 +19,5 @@ def main():
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -3,16 +3,24 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.0.4
+## Created by: Qt User Interface Compiler version 6.11.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-
-from  . import res_rc
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLayout,
+    QMainWindow, QMenu, QMenuBar, QSizePolicy,
+    QSlider, QSpacerItem, QTextEdit, QToolButton,
+    QVBoxLayout, QWidget)
+from . import res_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -32,7 +40,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.layout_sprite = QHBoxLayout()
         self.layout_sprite.setObjectName(u"layout_sprite")
-        self.horizontalSpacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.layout_sprite.addItem(self.horizontalSpacer)
 
@@ -45,7 +53,7 @@ class Ui_MainWindow(object):
 
         self.layout_sprite.addWidget(self.lbl_sprite)
 
-        self.horizontalSpacer_2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.layout_sprite.addItem(self.horizontalSpacer_2)
 
@@ -54,7 +62,7 @@ class Ui_MainWindow(object):
 
         self.textedit = QTextEdit(self.centralwidget)
         self.textedit.setObjectName(u"textedit")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textedit.sizePolicy().hasHeightForWidth())
@@ -91,7 +99,7 @@ class Ui_MainWindow(object):
 
         self.lbl_time = QLabel(self.centralwidget)
         self.lbl_time.setObjectName(u"lbl_time")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.lbl_time.sizePolicy().hasHeightForWidth())
