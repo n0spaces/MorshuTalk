@@ -12,7 +12,7 @@ if not os.path.exists('build'):
 
 win_amd64_pyside6_keep = (
     glob(r'build\exe.win*\lib\PySide6\plugins\platforms\qwindows.dll') +
-    glob(r'build\exe.win*\lib\PySide6\plugins\styles\qwindowsvistastyle.dll') +
+    glob(r'build\exe.win*\lib\PySide6\plugins\styles\*') +
     glob(r'build\exe.win*\lib\PySide6\pyside6.abi3.dll') +
     glob(r'build\exe.win*\lib\PySide6\Qt6Core.dll') +
     glob(r'build\exe.win*\lib\PySide6\Qt6Gui.dll') +
@@ -23,7 +23,8 @@ win_amd64_pyside6_keep = (
     glob(r'build\exe.win*\lib\PySide6\QtCore.pyd') +
     glob(r'build\exe.win*\lib\PySide6\QtGui.pyd') +
     glob(r'build\exe.win*\lib\PySide6\QtWidgets.pyd') +
-    glob(r'build\exe.win*\lib\PySide6\__init__.pyc')
+    glob(r'build\exe.win*\lib\PySide6\__init__.pyc') +
+    glob(r'build\exe.win*\lib\PySide6\_cx_freeze_debug.pyc')
 )
 
 win_amd64_paths_delete = (
@@ -36,10 +37,10 @@ win_amd64_paths_delete.extend(glob(r'build\exe.win*\lib\**\tests', recursive=Tru
 win_amd64_paths_delete.extend(glob(r'build\exe.win*\lib\**\test', recursive=True))
 
 win_amd64_files_delete = (
-    glob(r'build\exe.win-amd64-3.9\lib\numpy\core\python39.dll') +
-    glob(r'build\exe.win-amd64-3.9\lib\**\python??.dll', recursive=True) +
-    glob(r'build\exe.win-amd64-3.9\lib\**\*.c', recursive=True) +
-    glob(r'build\exe.win-amd64-3.9\lib\**\*.h', recursive=True)
+    glob(r'build\exe.win*\lib\numpy\core\python39.dll') +
+    glob(r'build\exe.win*\lib\**\python??.dll', recursive=True) +
+    glob(r'build\exe.win*\lib\**\*.c', recursive=True) +
+    glob(r'build\exe.win*\lib\**\*.h', recursive=True)
 )
 
 for path in win_amd64_paths_delete:

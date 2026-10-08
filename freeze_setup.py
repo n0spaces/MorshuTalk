@@ -4,18 +4,15 @@ import os
 # no idea why cx_freeze includes soooo many unneeded packages
 # i'd exclude more but shiboken (pyside6) needs them for some reason
 exclude_packages = [
-    'asyncio',
     'certifi',
     'cffi',
     'chardet',
-    'concurrent',
     'curses',
     'distutils',
     'idna',
     'joblib',
     'lib2to3',
     'msilib',
-    'multiprocessing',
     'networkx',
     'pycparser',
     'pydoc_data',
@@ -34,13 +31,19 @@ exclude_packages = [
 ]
 
 include_packages = [
+    'asyncio',
+    'concurrent',
+    'multiprocessing',
+    'pydoc',
     'secrets',
+    'unittest',
 ]
 
 build_options = {
     'excludes': exclude_packages,
     'includes': include_packages,
-    'include_files': ['LICENSE.txt']
+    'include_files': ['LICENSE.txt'],
+    'optimize': 2,
 }
 
 if os.path.exists('thirdparty.txt'):
