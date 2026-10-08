@@ -5,9 +5,9 @@ import warnings
 from pydub import AudioSegment
 from typing import List, Tuple, Callable, Literal
 
-from morshutalk.g2p import G2pProgress
+from morshutalk.g2p import MorshuG2p
 
-g2p = G2pProgress()
+g2p = MorshuG2p()
 
 morshu_wav_fp = path.join(path.dirname(__file__), 'morshu.wav')
 morshu_wav = AudioSegment.from_wav(morshu_wav_fp)
