@@ -19,7 +19,7 @@ This program works by converting the given text into phonemes with [g2p_en](http
 concatenates the segments of Morshu's audio where he speaks those phonemes.
 
 ## Requirements
-Python 3.7+ (tested on Windows, should also work on Linux and macOS)
+Python 3.14 (tested on Windows and Linux)
 
 Python is not required if you're just using the MorshuTalk executable.
 
@@ -34,7 +34,7 @@ If you have Python installed, you can install this with `pip`:
 
     pip install morshutalk
 
-Or you can clone this repo and run the setup script:
+To use the package in a python script, clone this repo and run the setup script:
 
     python setup.py install
 
@@ -65,6 +65,7 @@ animate as he speaks. You can toggle the sprite visibility from the View menu.
 1. Clone this repo.
 2. Create a [virtual environment](https://docs.python.org/3/tutorial/venv.html) and activate it.
 3. Install the required packages with `pip install -r requirements.txt`
+   At this point you can run `python -m morshutalk` or `python -m morshutalkgui`.
 4. If you make changes to `mainwindow.ui`, update `ui_mainwindow.py` with:
 ```commandline
 pyside6-uic morshutalkgui/ui/mainwindow.ui -o morshutalkgui/ui_mainwindow.py --from-imports

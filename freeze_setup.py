@@ -1,4 +1,5 @@
 import cx_Freeze
+import os
 
 # no idea why cx_freeze includes soooo many unneeded packages
 # i'd exclude more but shiboken (pyside6) needs them for some reason
@@ -39,8 +40,11 @@ include_packages = [
 build_options = {
     'excludes': exclude_packages,
     'includes': include_packages,
-    'include_files': [('thirdparty.txt', ''), ('LICENSE.txt', '')]
+    'include_files': ['LICENSE.txt']
 }
+
+if os.path.exists('thirdparty.txt'):
+    build_options['include_files'].append('thirdparty.txt')
 
 base = None
 # base = 'Win32GUI' if sys.platform == 'win32' else None
