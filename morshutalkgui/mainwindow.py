@@ -1,7 +1,9 @@
 import webbrowser
+
 import sounddevice as sd
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QCloseEvent, QPixmap
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QApplication
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from morshutalk import Morshu
 from morshutalkgui.morshuworker import MorshuWorker
@@ -9,13 +11,11 @@ from morshutalkgui.progressdialog import ProgressDialog
 from morshutalkgui.ui_mainwindow import Ui_MainWindow
 
 
-# PySide6 builtin, referenced to call processEvents
-qApp: QApplication
-
-
 class MainWindow(QMainWindow):
+    sprite_frame_changed = Signal(int)
+
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.frames = []
         for i in range(154):
-            self.frames.append(QPixmap(":/sprites/{}.png".format(i)))
+            self.frames.append(QPixmap(f":/sprites/{i}.png"))
 
         # current audio time in seconds
         self.audio_current_time = 0.0
@@ -59,6 +59,8 @@ class MainWindow(QMainWindow):
 
         self.progress_dialog.canceled.connect(self.morshu.cancel)
 
+        self.sprite_frame_changed.connect(lambda frame: self.ui.lbl_sprite.setPixmap(self.frames[frame]))
+
     @property
     def audio_buff_pos(self) -> int:
         """The current index position in the raw audio buffer"""
@@ -73,7 +75,7 @@ class MainWindow(QMainWindow):
         self._audio_buff_pos = value
         self.audio_current_time = (self.audio_buff_pos / self.morshu.out_audio.frame_rate /
                                    self.morshu.out_audio.sample_width)
-        self.ui.lbl_time.setText("{:.2f}".format(self.audio_current_time))
+        self.ui.lbl_time.setText(f"{self.audio_current_time:.2f}")
         if not self.ui.slider.isSliderDown():
             self.ui.slider.setValue(
                 self.audio_buff_pos // (self.morshu.out_audio.channels * self.morshu.out_audio.sample_width)
@@ -96,10 +98,13 @@ class MainWindow(QMainWindow):
         """
         if value == -1:
             return
-        if not value == self._sprite_frame:
+        if value != self._sprite_frame:
             self._sprite_frame = value
-            self.ui.lbl_sprite.setPixmap(self.frames[value])
-            qApp.processEvents()  # fixes sprite freezing after updating too many times
+            self.sprite_frame_changed.emit(value)
+    
+    # def update_pixmap_frame(self, frame: int):
+    #     self.sprite_item.setPixmap(self.frames[frame])
+    #     self.ui.graphics_view.fitInView(self.sprite_item, Qt.AspectRatioMode.KeepAspectRatio)
 
     @property
     def controls_enabled(self):
