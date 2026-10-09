@@ -12,7 +12,7 @@ def main():
     nltk.download("averaged_perceptron_tagger_eng")
 
     app = QApplication(sys.argv)
-    if "windowsvista" in QStyleFactory:
+    if "windowsvista" in QStyleFactory.keys():  # noqa: SIM118 (this is not a dict)
         app.setStyle("windowsvista")
 
     main_window = MainWindow()
