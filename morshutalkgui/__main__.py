@@ -1,17 +1,19 @@
 print("Loading MorshuTalk...")
 
 import sys
-from PySide6.QtWidgets import QApplication
-
-from morshutalkgui.mainwindow import MainWindow
 
 import nltk
+from PySide6.QtWidgets import QApplication, QStyleFactory
+
+from morshutalkgui.mainwindow import MainWindow
 
 
 def main():
     nltk.download("averaged_perceptron_tagger_eng")
 
     app = QApplication(sys.argv)
+    if "windowsvista" in QStyleFactory:
+        app.setStyle("windowsvista")
 
     main_window = MainWindow()
     main_window.show()
