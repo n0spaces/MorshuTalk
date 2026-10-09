@@ -1,13 +1,8 @@
-> Hi Wayne :)
-
 > [!TIP]
-> For anyone coming here who just wants to try out the TTS, [click here to download it](https://github.com/n0spaces/MorshuTalk/releases/download/v0.0.1/MorshuTalk-GUI-Windows-0.0.1.zip).
-> Extract the ZIP and run MorshuTalk.exe. (For Linux users, this should work out-of-the-box with wine.)
+> For anyone coming here who just wants to try out the TTS, [click here to view the latest release](https://github.com/n0spaces/MorshuTalk/releases/latest).
+> Download and extract the ZIP, then run MorshuTalk.exe. For Linux users, this should work out-of-the-box with wine.
 
-> For developers: this program is pretty old and I don't plan on updating it any time soon. The building instructions below might not work with modern versions of Python.
->
-> If you plan on using this in a project and need help customizing or improving it, feel free to open a discussion or issue.
-> I'm happy to provide guidance on how the sentence-mixing algorithm works (it's not that complicated) and how custom voices could potentially be added.
+> This is an old program that I made over a few weekends for fun. Don't expect frequent updates.
 
 # MorshuTalk
 
@@ -92,3 +87,5 @@ This uses the following libraries:
 * [Pydub](http://pydub.com/)
 * [sounddevice](https://pypi.org/project/sounddevice/)
 * [PySide 6 (Qt for Python)](https://wiki.qt.io/Qt_for_Python)
+* [p5-NRL-TextToPhoneme](https://github.com/greg-kennedy/p5-NRL-TextToPhoneme) ported to Python
+    * This is an implementation of *Automatic Translation of English Text to Phonetics by Means of Letter-to-Sound Rules* by Elovitz, *et al.* (1976)
